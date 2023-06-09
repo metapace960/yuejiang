@@ -1,0 +1,302 @@
+
+
+
+<!DOCTYPE html>
+<html>
+
+
+
+
+
+<head>
+	<title>评分系统</title>
+
+
+
+	<meta charset="UTF-8">
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script type="text/javascript">
+	// 读取 localStorage 中保存的评分数据
+	function readScore() {
+		var score = JSON.parse(localStorage.getItem('score')) || {};
+		for (var key in score) {
+			if (score.hasOwnProperty(key)) {
+				var val = score[key];
+				if ($('#'+key).length > 0) {
+					$('#'+key).val(val);
+				}
+			}
+		}
+	}
+
+	// 将评分数据保存到 localStorage 中
+	function saveScore() {
+		var score = {};
+        $('input[type="number"]').each(function(index, elem){
+        	score[elem.id] = elem.value;
+        });
+        localStorage.setItem('score', JSON.stringify(score));
+    }
+
+    // 提交评分数据到后台服务器处理
+    function submitScore() {
+    	saveScore();
+    	var data = $('#form').serialize();
+    	console.log(data);
+    	alert('提交成功！');
+    }
+	
+    // 页面加载完成后执行一些操作
+    $(function(){
+    	readScore();
+    	setInterval(saveScore, 5000); // 每隔5秒钟自动保存一次评分数据
+    });
+    
+</script>
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+	<h1>评分系统</h1>
+
+	<p>请为赵、钱、孙、李四人打分：</p>
+
+
+
+
+
+
+<table>
+  <tr>
+    <td><label>工作量表类型</label></td>
+    <td><label>赵：</label></td>
+    <td><label>钱：</label></td>
+    <td><label>孙：</label></td>
+    <td><label>李：</label></td>
+  </tr>
+  <tr>
+    <td><label>工作量表1：</label></td>
+     <td><input type="number" id="zhao1Score" name="zhao1Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="qian1Score" name="qian1Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="sun1Score" name="sun1Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="li1Score" name="li1Score" min="0" max="20" oninput="checkValidity()"></td>
+  </tr>
+  <tr>
+    <td><label>工作量表2：</label></td>
+     <td><input type="number" id="zhao2Score" name="zhao2Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="qian2Score" name="qian2Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="sun2Score" name="sun2Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="li2Score" name="li2Score" min="0" max="20" oninput="checkValidity()"></td>
+  </tr>
+  <tr>
+    <td><label>工作量表3：</label></td>
+     <td><input type="number" id="zhao3Score" name="zhao3Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="qian3Score" name="qian3Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="sun3Score" name="sun3Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="li3Score" name="li3Score" min="0" max="20" oninput="checkValidity()"></td>
+  </tr>
+  <tr>
+    <td><label>工作量表4：</label></td>
+    <td><input type="number" id="zhao4Score" name="zhao4Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="qian4Score" name="qian4Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="sun4Score" name="sun4Score" min="0" max="20" oninput="checkValidity()"></td>
+    <td><input type="number" id="li4Score" name="li4Score" min="0" max="20" oninput="checkValidity()"></td>
+  </tr>
+</table >
+
+
+
+
+
+
+<button onclick = "calculate()">提交评分</button>       
+
+
+<p>Result:  </p>
+<table>
+  <tr>
+    <td><label>赵：</label></td>
+    <td><label>钱：</label></td>
+    <td><label>孙：</label></td>
+    <td><label>李：</label></td>
+    <td><label>和：</label></td>
+  </tr>
+  <tr>
+    <td><input type="text" id="zhaoresult">
+    <td><input type="text" id="qianresult">
+    <td><input type="text" id="sunresult">
+    <td><input type="text" id="liresult">
+    <td><input type="text" id="zanshi1">
+  </tr>
+  <tr>
+    <td><label>赵：</label></td>
+    <td><label>钱：</label></td>
+    <td><label>孙：</label></td>
+    <td><label>李：</label></td>
+    <td><label>和：</label></td>
+  </tr>
+  <tr>
+    <td><input type="text" id="zhaobihe">
+    <td><input type="text" id="qianbihe">
+    <td><input type="text" id="sunbihe">
+    <td><input type="text" id="libihe">
+    <td><input type="text" id="zanshi2">
+  </tr>
+</table >
+
+
+
+
+<script>
+
+
+const inputs = document.querySelectorAll('input'); // 获取所有输入框元素
+
+inputs.forEach(input => { // 为每个输入框元素添加事件监听器
+  input.addEventListener('input', () => {
+    const value = input.value.trim(); // 去掉前后空格
+
+    if (!/^[1-9]$|^1\d$|^20$/.test(value)) { // 使用正则表达式匹配数字是否在1-20之间
+      input.value = ''; // 如果不在范围内，清空输入框内容
+    }
+  });
+});
+
+</script>
+
+
+<script>
+function calculate() {
+  let zhao1Score = document.getElementById("zhao1Score").value;
+  let zhao2Score = document.getElementById("zhao2Score").value;
+  let zhao3Score = document.getElementById("zhao3Score").value;
+  let zhao4Score = document.getElementById("zhao4Score").value;
+
+  let zhaosum = parseFloat(zhao1Score) + parseFloat(zhao2Score) +parseFloat(zhao3Score) +parseFloat(zhao4Score)  ;
+
+
+
+  let qian1Score = document.getElementById("qian1Score").value;
+  let qian2Score = document.getElementById("qian2Score").value;
+  let qian3Score = document.getElementById("qian3Score").value;
+  let qian4Score = document.getElementById("qian4Score").value;
+
+  let qiansum = parseFloat(qian1Score) + parseFloat(qian2Score) +parseFloat(qian3Score) +parseFloat(qian4Score) ;
+
+
+  let sun1Score = document.getElementById("sun1Score").value;
+  let sun2Score = document.getElementById("sun2Score").value;
+  let sun3Score = document.getElementById("sun3Score").value;
+  let sun4Score = document.getElementById("sun4Score").value;
+
+  let sunsum = parseFloat(sun1Score) + parseFloat(sun2Score) +parseFloat(sun3Score) +parseFloat(sun4Score) ;
+  let sunsumxishu=sunsum*1.1;
+
+
+  let li1Score = document.getElementById("li1Score").value;
+  let li2Score = document.getElementById("li2Score").value;
+  let li3Score = document.getElementById("li3Score").value;
+  let li4Score = document.getElementById("li4Score").value;
+
+  let lisum = parseFloat(li1Score) + parseFloat(li2Score) +parseFloat(li3Score) +parseFloat(li4Score)  ;
+  let lisumxishu=lisum*1.1;
+
+
+//设置奖金池系数
+  let jiangjinchi=20000;
+
+
+//计算单份奖金
+  let zongfen=parseFloat(zhaosum) + parseFloat(qiansum) +parseFloat(sunsumxishu) +parseFloat(lisumxishu)  ;
+  let danfen=jiangjinchi/zongfen
+
+//计算初步奖金
+  let zhaojiangjin=zhaosum*danfen
+  let qianjiangjin=qiansum*danfen
+  let sunjiangjin=sunsumxishu*danfen
+  let lijiangjin=lisumxishu*danfen
+
+
+//奖金取整
+let zhaoquzheng=zhaojiangjin.toFixed(0)
+let qianquzheng=qianjiangjin.toFixed(0)
+let sunquzheng=sunjiangjin.toFixed(0)
+let liquzheng=lijiangjin.toFixed(0)
+
+
+  //输出1
+  document.getElementById("zhaoresult").value =zhaoquzheng;
+  document.getElementById("qianresult").value = qianquzheng;
+  document.getElementById("sunresult").value = sunquzheng;
+  document.getElementById("liresult").value = liquzheng;
+
+
+
+//开始闭合
+   //选出最高奖金
+var max=Math.max(zhaoquzheng,qianquzheng,sunquzheng,liquzheng);
+
+
+   //判断闭合
+let quzhenghe=Number(zhaoquzheng)+Number(qianquzheng)+Number(sunquzheng)+Number(liquzheng) ;
+let bihecha=Number(quzhenghe)-Number(jiangjinchi)
+let maxminus=Number(max)-Number(bihecha)
+
+
+   //输出2
+  document.getElementById("zanshi1").value = quzhenghe;
+
+
+  //修正闭合
+if (zhaoquzheng==max){
+  zhaobihev= maxminus;
+}else{
+  zhaobihev= zhaoquzheng;
+}
+
+if (qianquzheng==max){
+  qianbihev= maxminus;
+}else{
+  qianbihev= qianquzheng;
+}
+
+if (sunquzheng==max){
+  sunbihev= maxminus;
+}else{
+  sunbihev= sunquzheng;
+}
+
+if (liquzheng==max){
+  libihev= maxminus;
+}else{
+  libihev= liquzheng;
+}
+
+let bihehe=Number(zhaobihev)+Number(qianbihev)+Number(sunbihev)+Number(libihev) ;
+
+
+  //输出3
+  document.getElementById("zhaobihe").value =zhaobihev;
+  document.getElementById("qianbihe").value = qianbihev;
+  document.getElementById("sunbihe").value = sunbihev;
+  document.getElementById("libihe").value = libihev;
+  document.getElementById("zanshi2").value = bihehe;
+
+
+
+
+
+}
+
+</script>
+
+
+

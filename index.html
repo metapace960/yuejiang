@@ -1,0 +1,26 @@
+<label for="username">用户名：</label>
+<select id="username" name="username">
+  <option value="">请选择</option>
+  <option value="user1">leader</option>
+  <option value="user2">非leader</option>
+</select>
+
+ <button onclick="submitForm()">提交</button>
+
+<script>
+function submitForm() {
+  var inputValue = document.getElementById("username").value;
+  
+  switch(inputValue) {
+    case "user1":
+      window.location.href = "leader.html";
+      break;
+    case "user2":
+      window.location.href = "nonleader.html";
+      break;
+    default:
+      window.location.href = "defaultPage.html";
+  }
+}
+
+</script>
